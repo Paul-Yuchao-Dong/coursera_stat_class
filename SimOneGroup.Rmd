@@ -1,0 +1,43 @@
+---
+title: "Untitled"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Draw 10 batches of 10 samples from population
+```{r}
+sample_size <- 216
+batches <- 100
+df <- data.frame(
+  IQ = rnorm(sample_size*batches, 100 ,15),
+  batches = rep(1:batches, each = sample_size)
+)
+```
+# calculate the stats 
+```{r}
+summaries <- df %>% 
+  group_by(batches) %>% 
+  summarise(means = mean(IQ), sd = sd(IQ)) # yep sd used the minus 1 denominator
+
+summaries
+
+summaries %>%   
+  group_modify(~range(.$means)) %>% 
+  diff
+```
+# if we only have access to one batch
+```{r}
+df %>% 
+  filter(batches == 1) %>% 
+  summarise(means = mean(IQ), sd = sd(IQ)) # yep sd used the minus 1 denominator
+  
+```
+```{r}
+summaries %>% 
+  summarise(type1 = mean(means>102 | means<98)*100)
+```
+
